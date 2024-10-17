@@ -1,15 +1,21 @@
-from rich.console import Console
-
-from ragbits.blueprint.base import BlueprintComponentType, BlueprintComponent
+from ragbits.blueprint.base import BlueprintComponent, BlueprintComponentType
 from ragbits.blueprint.options import ChoiceOption
 
 
 class EmbeddingsComponentType(BlueprintComponentType):
+    """
+    A component type for embeddings providers.
+    """
+
     name = "Embeddings Provider"
     description = "will be used to create vector representations of elements and for search functionality"
 
 
 class LiteLLMEmbeddingsComponent(BlueprintComponent):
+    """
+    LiteLLM Embeddings component.
+    """
+
     name = "LiteLLM Embeddings"
     description = "supports most popular embeddings providers with unified API."
     options = {
@@ -24,15 +30,23 @@ class LiteLLMEmbeddingsComponent(BlueprintComponent):
     }
 
     @classmethod
-    def help(cls):
-        Console().print(
-            "For more information, visit https://docs.litellm.ai/"
-        )
+    def help(cls) -> str:
+        """
+        Get a help message for the component.
 
-    def generate(self):
-        return {
-            "model_name": self.options["model_name"]
-        }
+        Returns:
+            A help message for the component.
+        """
+        return "For more information, visit https://docs.litellm.ai/"
+
+    def generate(self) -> str:
+        """
+        Generate the code for the component.
+
+        Returns:
+            The code for the component.
+        """
+        return f"""LiteLLMEmbeddings(model_name="{self._selected_options['model_name']}")"""
 
 
 EmbeddingsComponentType.register(LiteLLMEmbeddingsComponent)
