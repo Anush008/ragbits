@@ -14,8 +14,20 @@ def register(app: typer.Typer, help_only: bool) -> None:  # pylint: disable=unus
         help_only: Whether to only register the help command.
     """
 
+    def write_to_file(content: str, path: str) -> None:
+        """
+        Write content to a file.
+
+        Args:
+            content: The content to write.
+            path: The file to write the content to.
+        """
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+
     @app.command()
-    def blueprint() -> None:
+    # pylint: disable=missing-param-doc
+    def blueprint(output: str | None = typer.Option(default=None, help="Output file for the blueprint")) -> None:
         """
         Generate a blueprint for a project interactively.
         """
@@ -23,6 +35,10 @@ def register(app: typer.Typer, help_only: bool) -> None:  # pylint: disable=unus
         rprint(blueprint.help())
         build = blueprint.collect()
 
-        rprint("[b]Blueprint generated:[/b]")
-        rprint()
-        rprint(build.generate())
+        if output:
+            write_to_file(build.generate(), output)
+            rprint(f"Blueprint written to [bold]{output}[/bold]")
+        else:
+            rprint("[b]Blueprint generated:[/b]")
+            rprint()
+            rprint(build.generate())

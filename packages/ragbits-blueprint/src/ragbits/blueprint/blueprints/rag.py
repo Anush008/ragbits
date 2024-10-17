@@ -82,9 +82,9 @@ class RAGBlueprint(Blueprint):
                 return response, elements
 
 
-            async def ingest():
+            async def ingest(documents):
                 document_search = get_document_search()
-                await document_search.ingest_document()
+                await document_search.ingest(documents)
 
 
             if __name__ == '__main__':
@@ -92,4 +92,4 @@ class RAGBlueprint(Blueprint):
             '''
             ).strip()
         )
-        return f"{imports}\n\n{body}"
+        return f"{imports}\n\n{body}\n"

@@ -60,7 +60,7 @@ class LiteLLMEmbeddingsComponent(BlueprintComponent):
         return textwrap.dedent(
             f"""
         def get_embeddings():
-            return LiteLLMEmbeddings(model_name="{self._selected_options["model_name"]}")
+            return LiteLLMEmbeddings(model="{self._selected_options["model_name"]}")
         """
         ).strip()
 
