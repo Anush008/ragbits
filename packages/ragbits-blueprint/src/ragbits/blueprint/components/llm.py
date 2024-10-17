@@ -67,7 +67,7 @@ class LiteLLMComponent(BlueprintComponent):
         def get_llm():
             return LiteLLM(model_name="{self._selected_options["model_name"]}")
         """
-        )
+        ).strip()
 
 
 LLMComponentType.clear()

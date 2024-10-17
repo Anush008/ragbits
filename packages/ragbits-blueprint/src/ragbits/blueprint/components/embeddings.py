@@ -1,3 +1,5 @@
+import textwrap
+
 from ragbits.blueprint.base import BlueprintComponent, BlueprintComponentType
 from ragbits.blueprint.options import ChoiceOption
 
@@ -39,6 +41,15 @@ class LiteLLMEmbeddingsComponent(BlueprintComponent):
         """
         return "For more information, visit https://docs.litellm.ai/"
 
+    def generate_imports(self) -> list[str]:
+        """
+        Generate the imports for the component.
+
+        Returns:
+            A list of strings with the imports.
+        """
+        return ["from ragbits.core.embeddings import LiteLLMEmbeddings"]
+
     def generate(self) -> str:
         """
         Generate the code for the component.
@@ -46,7 +57,12 @@ class LiteLLMEmbeddingsComponent(BlueprintComponent):
         Returns:
             The code for the component.
         """
-        return f"""LiteLLMEmbeddings(model_name="{self._selected_options['model_name']}")"""
+        return textwrap.dedent(
+            f"""
+        def get_embeddings():
+            return LiteLLMEmbeddings(model_name="{self._selected_options["model_name"]}")
+        """
+        ).strip()
 
 
 EmbeddingsComponentType.register(LiteLLMEmbeddingsComponent)

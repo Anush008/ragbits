@@ -51,7 +51,7 @@ class BlueprintComponent(ABC):
             An instance of the component with the selected options.
         """
         Console().print(f"Configuring [cyan bold]{cls.name}...\n")
-        cls.help()
+        Console().print(cls.help())
         Console().print("\n")
         collected = {}
         for option_name, option in cls.options.items():

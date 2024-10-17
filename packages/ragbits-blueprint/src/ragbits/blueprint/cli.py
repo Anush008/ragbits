@@ -1,5 +1,6 @@
 import typer
 from inquirer.shortcuts import list_input
+from rich import print as rprint
 
 from ragbits.blueprint.blueprints import BLUEPRINTS
 
@@ -19,6 +20,9 @@ def register(app: typer.Typer, help_only: bool) -> None:  # pylint: disable=unus
         Generate a blueprint for a project interactively.
         """
         blueprint = list_input("Which blueprint", choices=[(f"{bp.name}: {bp.description}", bp) for bp in BLUEPRINTS])
-        blueprint.help()
+        rprint(blueprint.help())
         build = blueprint.collect()
-        print(build.generate())
+
+        rprint("[b]Blueprint generated:[/b]")
+        rprint()
+        rprint(build.generate())
