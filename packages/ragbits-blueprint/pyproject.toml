@@ -1,7 +1,7 @@
 [project]
-name = "ragbits-cli"
+name = "ragbits-blueprint"
 version = "0.1.0"
-description = "A CLI application for ragbits - building blocks for rapid development of GenAI applications"
+description = "Building blocks for rapid development of GenAI applications"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -30,16 +30,18 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dependencies = [
-    "typer>=0.12.5",
-    "inquirer",
-    "rich",
-    "ragbits-core==0.1.0"
-]
+dependencies = []
 
-[project.scripts]
-ragbits = "ragbits.cli:main"
-rbts = "ragbits.cli:main"
+[project.optional-dependencies]
+
+[tool.uv]
+dev-dependencies = [
+    "pre-commit~=3.8.0",
+    "pytest~=8.3.3",
+    "pytest-cov~=5.0.0",
+    "pytest-asyncio~=0.24.0",
+    "pip-licenses>=4.0.0,<5.0.0"
+]
 
 [build-system]
 requires = ["hatchling"]
