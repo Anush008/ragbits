@@ -2,6 +2,7 @@ import textwrap
 
 from ragbits.blueprint.base import Blueprint
 from ragbits.blueprint.components.embeddings import EmbeddingsComponentType
+from ragbits.blueprint.components.ingest_source import IngestionSourceComponentType
 from ragbits.blueprint.components.llm import LLMComponentType
 from ragbits.blueprint.components.vector_store import VectorStoreComponentType
 
@@ -13,7 +14,7 @@ class RAGBlueprint(Blueprint):
 
     name = "RAG Chatbot"
     description = "A blueprint for RAG applications."
-    components = [LLMComponentType, EmbeddingsComponentType, VectorStoreComponentType]
+    components = [LLMComponentType, EmbeddingsComponentType, VectorStoreComponentType, IngestionSourceComponentType]
 
     @classmethod
     def help(cls) -> str:
@@ -33,6 +34,7 @@ class RAGBlueprint(Blueprint):
             A string with the code for the blueprint.
         """
         imports = self.generate_imports()
+        ingest_source = self._selected_components.pop(IngestionSourceComponentType)
         components = self.generate_components()
 
         imports = (
@@ -43,7 +45,6 @@ class RAGBlueprint(Blueprint):
                 """
             from pydantic import BaseModel
             from ragbits.core.prompt import Prompt
-            from ragbits.document_search.documents.element import Element
             """
             ).strip()
         )
@@ -54,18 +55,20 @@ class RAGBlueprint(Blueprint):
             + textwrap.dedent(
                 '''
             class QAInput(BaseModel):
-                elements: list[Element]
+                context: list[str]
                 question: str
 
 
             class QAPrompt(Prompt[QAInput, str]):
 
                 system_prompt = """
-                Your task is to answer user question based on the context provided in the document.
+                    Your task is to provide a concise, accurate answer to the user's question based on the context provided in the document.
+                    Use numbered lists or bullet points when they improve the clarity or structure of the answer.
+                    REMEMBER! Carefully review all of the context before formulating your response.
 
                 <context>
-                    {% for element in elements %}
-                        {{ element.content }}
+                    {% for ctx in context %}
+                        {{ ctx }}
                     {% endfor %}
                 </context>
                 """
@@ -78,18 +81,21 @@ class RAGBlueprint(Blueprint):
 
                 elements = await document_search.search(question)
 
-                response = await llm.generate(QAPrompt(QAInput(question=question, elements=elements)))
+                response = await llm.generate(QAPrompt(
+                    QAInput(question=question, context=[el.content for el in elements])
+                ))
                 return response, elements
 
-
-            async def ingest(documents):
+                '''
+                + f"""
+            async def ingest():
                 document_search = get_document_search()
-                await document_search.ingest(documents)
+                await document_search.ingest({ingest_source.generate()})
 
 
             if __name__ == '__main__':
                 asyncio.run(answer("my_question"))
-            '''
+            """
             ).strip()
         )
         return f"{imports}\n\n{body}\n"

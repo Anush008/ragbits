@@ -1,11 +1,12 @@
 import typer
 from inquirer.shortcuts import list_input
 from rich import print as rprint
+from rich.syntax import Syntax
 
 from ragbits.blueprint.blueprints import BLUEPRINTS
 
 
-def register(app: typer.Typer, help_only: bool) -> None:  # pylint: disable=unused-argument
+def register(app: typer.Typer) -> None:  # pylint: disable=unused-argument
     """
     Register the CLI commands for the package.
 
@@ -31,9 +32,9 @@ def register(app: typer.Typer, help_only: bool) -> None:  # pylint: disable=unus
         """
         Generate a blueprint for a project interactively.
         """
-        blueprint = list_input("Which blueprint", choices=[(f"{bp.name}: {bp.description}", bp) for bp in BLUEPRINTS])
-        rprint(blueprint.help())
-        build = blueprint.collect()
+        chosen_bp = list_input("Which blueprint", choices=[(f"{bp.name}: {bp.description}", bp) for bp in BLUEPRINTS])
+        rprint(chosen_bp.help())
+        build = chosen_bp.collect()
 
         if output:
             write_to_file(build.generate(), output)
@@ -41,4 +42,7 @@ def register(app: typer.Typer, help_only: bool) -> None:  # pylint: disable=unus
         else:
             rprint("[b]Blueprint generated:[/b]")
             rprint()
-            rprint(build.generate())
+
+            generated = build.generate()
+            rprint(Syntax(generated, "python", theme="monokai", line_numbers=False))
+            rprint()

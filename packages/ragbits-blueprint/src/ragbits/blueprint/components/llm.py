@@ -24,10 +24,10 @@ class LiteLLMComponent(BlueprintComponent):
         "model_name": ChoiceOption(
             message="Choose a model",
             choices={
-                "gpt4o": "OpenAI gpt-4o",
-                "gpt4": "OpenAI gpt-4",
-                "gpt3": "OpenAI gpt-3",
-                "gemini": "Google Gemini",
+                "gpt-4o": "OpenAI gpt-4o",
+                "gpt-4": "OpenAI gpt-4",
+                "gpt-3": "OpenAI gpt-3",
+                "vertex_ai/gemini-pro": "Google Gemini Pro",
             },
             allow_other=True,
         )

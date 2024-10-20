@@ -1,6 +1,9 @@
 import abc
+from pathlib import Path
+from typing import Literal
 
-from inquirer.shortcuts import list_input, text
+from inquirer import Path as PathType
+from inquirer.shortcuts import list_input, path, text
 
 
 class Option(abc.ABC):
@@ -43,3 +46,56 @@ class ChoiceOption(Option):
             return text("Enter your choice")
 
         return chosen
+
+
+class TextOption(Option):
+    """
+    An option that allows the user to freeform text input.
+    """
+
+    def __init__(self, message: str, default: str | None = None):
+        self.message = message
+        self.default = default
+
+    def resolve(self) -> str:
+        """
+        Ask user for a text input.
+
+        Returns:
+            User input.
+        """
+        return text(self.message, default=self.default)
+
+
+class PathOption(Option):
+    """
+    An option that allows the user to provide filesystem path.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        default: str | None = None,
+        exists: bool = False,
+        absolute: bool = False,
+        path_type: Literal["dir", "file"] | None = None,
+    ):
+        self.message = message
+        self.default = default
+
+        self.exists = exists
+        self.absolute = absolute
+        self.path_type = (
+            PathType.DIRECTORY if path_type == "dir" else PathType.FILE if path_type == "file" else PathType.ANY
+        )
+
+    def resolve(self) -> str:
+        """
+        Ask user for a path input.
+
+        Returns:
+            User provided path.
+        """
+        result_path = path(self.message, default=self.default, exists=self.exists, path_type=self.path_type)
+
+        return str(Path(result_path).absolute()) if self.absolute else result_path

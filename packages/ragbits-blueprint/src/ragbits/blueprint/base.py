@@ -50,9 +50,9 @@ class BlueprintComponent(ABC):
         Returns:
             An instance of the component with the selected options.
         """
-        Console().print(f"Configuring [cyan bold]{cls.name}...\n")
-        Console().print(cls.help())
-        Console().print("\n")
+        Console().print(f"[gray53]\nConfiguring [bold]{cls.name}...")
+        if help := cls.help():
+            Console().print("\n[gray53]" + help.strip("\n") + "\n")
         collected = {}
         for option_name, option in cls.options.items():
             collected[option_name] = option.resolve()
@@ -178,8 +178,12 @@ class Blueprint(ABC):
         _selected_components = {}
         for component_type in cls.components:
             components = component_type.get_components()
+            Console().print(
+                f"[gray53]---\n\n[orange3][b]Select {component_type.name}[/b]: {component_type.description}\n"
+            )
+
             chosen = list_input(
-                message=f"Choose {component_type.info()}",
+                message=f"Choose {component_type.name}",
                 choices=[(component.info(), component) for component in components],
             )
 
